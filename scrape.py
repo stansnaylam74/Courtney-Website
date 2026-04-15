@@ -9,11 +9,20 @@ import json
 url = "https://www.ratemyagent.com.au/real-estate-agent/courtney-brown-cx744/sales/properties"
 
 with sync_playwright() as p:
-    browser = p.chromium.launch()
-    page = browser.new_page()
+    browser = p.chromium.launch(headless=True)
+    context = browser.new_context(
+        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        viewport={"width": 1280, "height": 800},
+        locale="en-AU"
+    )
+    page = context.new_page()
     page.goto(url, wait_until="networkidle", timeout=60000)
-    page.wait_for_timeout(3000)
+    page.wait_for_timeout(5000)
+    
+    # Print page content for debugging
     html = page.content()
+    print(html[:3000])
+    
     browser.close()
 
 from bs4 import BeautifulSoup
