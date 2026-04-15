@@ -1,0 +1,23 @@
+name: Scrape listings
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - run: pip install requests beautifulsoup4
+      - run: python scrape.py
+      - run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git add listings.json
+          git diff --cached --quiet || git commit -m "Update listings"
+          git push
